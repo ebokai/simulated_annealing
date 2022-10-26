@@ -58,6 +58,8 @@ int main(int argc, char **argv){
 			new_logE = evidence(new_partition, data, N);
 			delta_logE = new_logE - logE;
 
+
+			// KEEP TRACK OF BEST PARTITION
 			if (new_logE > best_logE){
 				best_logE = new_logE;
 				best_partition = new_partition;

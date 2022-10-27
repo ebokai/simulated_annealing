@@ -1,12 +1,12 @@
 #include "header.h"
 
-map<uint32_t, int> get_data(int &N){
+map<uint32_t, int> get_data(int &N, string fname){
 
 	map<uint32_t, int> data;
 	uint32_t state;
-	string fname = "./data/Dataset_SCOTUS_n9_N895_best_basis.dat";
+	string fpath = "./data/" + fname + ".dat";
 	string line, subline;
-	ifstream myfile(fname);
+	ifstream myfile(fpath);
 
 	while (getline(myfile, line)){
 		subline = line.substr(0,n);

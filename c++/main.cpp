@@ -108,6 +108,8 @@ int main(int argc, char **argv){
 	}
 
 	cout << true_logE << " " << best_logE << " " << best_logE - true_logE << endl;
+
+	// currently unused 
 	double dlogE = best_logE - true_logE;
 	double voi = get_voi(true_partition, best_partition);
 

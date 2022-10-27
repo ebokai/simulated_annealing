@@ -21,7 +21,7 @@ int main(int argc, char **argv){
 
 	// INITIAL PARTITION
 	for(int i = 0; i < n; i++){
-		partition[i] = i / 5;
+		partition[i] = i % n;
 	}
 
 	best_partition = partition;
@@ -36,7 +36,7 @@ int main(int argc, char **argv){
 	double p, u;
 	float T = 100, T0 = 100;
 
-	int rn = 0;
+	int rn = 0; // number of runs without improvement
 
 	for (int run = 0; run < 100; run++){
 
@@ -45,8 +45,8 @@ int main(int argc, char **argv){
 		T = T0;
 		partition = best_partition;
 		logE = best_logE;
-		int na = 0;
-		int nc = 0;
+		int na = 0; // number of accepted proposals this run
+		int nc = 0; // number of steps without improvement this run
 		int step = 0;
 
 		if (rn > 20) {continue;}

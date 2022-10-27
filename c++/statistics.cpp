@@ -67,22 +67,21 @@ double get_voi(map<int,int> p1, map<int, int> p2){
 		int c1 = p1[i];
 		int c2 = p2[i];
 
-		if (c1 > n1) {n1 = c1;}
-		if (c2 > n2) {n2 = c2;}
+		if (c1 >= n1) {n1 = c1+1;}
+		if (c2 >= n2) {n2 = c2+1;}
 
 		comms1[c1] += pow(2,i);
 		comms2[c2] += pow(2,i);		
 
 	}
 
-	for (int i = 0; i <= n1; i++){
+	for (int i = 0; i < n1; i++){
 
 		float p1 = (float)(bitset<n>(comms1[i]).count()) / (float)(n);
 
-		for (int j = 0; j <= n2; j++){
+		for (int j = 0; j < n2; j++){
 
 			float p2 = (float)(bitset<n>(comms2[j]).count()) / (float)(n);
-
 			float p12 = (float)(bitset<n>(comms1[i] & comms2[j]).count())/(float)(n);
 
 			if (p12 > 0){

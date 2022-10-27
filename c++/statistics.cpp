@@ -55,10 +55,10 @@ map<uint32_t, int> build_pdata(map<uint32_t, int> data, uint32_t pbit){
 
 double get_voi(map<int,int> p1, map<int, int> p2){
 
-	double mut = 0;
-	double ent = 0;
-	double voi = 0;
-	int n1 = 0, n2 = 0;
+	double mut = 0; // mutual information
+	double ent = 0; // entropy
+	double voi = 0; // variation of information
+	int n1 = 0, n2 = 0; // number of communities in partition
 
 	map<int,uint32_t> comms1;
 	map<int,uint32_t> comms2; 
@@ -70,7 +70,7 @@ double get_voi(map<int,int> p1, map<int, int> p2){
 		if (c1 >= n1) {n1 = c1+1;}
 		if (c2 >= n2) {n2 = c2+1;}
 
-		comms1[c1] += pow(2,i);
+		comms1[c1] += pow(2,i); // represent members as binary integer
 		comms2[c2] += pow(2,i);		
 
 	}

@@ -8,6 +8,9 @@ int main(int argc, char **argv){
 	string fname = argv[1];
 	int cooling_schedule = atoi(argv[2]);
 
+	string result_file = "./results/" + fname + "_results.dat";
+	ofstream myfile(result_file);
+
 	
 	// MAIN CODE
 
@@ -92,6 +95,7 @@ int main(int argc, char **argv){
 				best_partition = new_partition;
 				cout << "RUN: " << run << " " << T << " " << best_logE << " " << nc << " ";
 				partition_print(new_partition);
+				myfile << run << ";" << best_logE << ";" << tot_its << ";" << T << endl;
 				nc = 0;
 				rn = 0;
 			} else {
@@ -147,6 +151,7 @@ int main(int argc, char **argv){
 	cout << true_logE << " " << best_logE << " " << best_logE - true_logE << endl;
 	cout << best_logE << endl;
 	cout << tot_its << endl;
+	myfile.close();
 
 	// WRITE PARTITION TO FILE (OPTIONAL)
 	//partition_write(best_partition, fname);

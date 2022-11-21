@@ -6,6 +6,7 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <cstdlib>
 
 using namespace std;
 
@@ -16,7 +17,7 @@ const int n = 20;
 
 // FUNCTION DEFS ======================
 void partition_print(map<int, int> partition);
-void partition_write(map<int, int> partition, string fname, string out_path);
+void partition_write(map<int, int> partition, string fname);
 int max_comm(map<int,int> partition);
 map<uint32_t, int> get_data(int &N, string fname);
 map<uint32_t, int> build_pdata(map<uint32_t, int> data, uint32_t pbit);

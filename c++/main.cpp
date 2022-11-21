@@ -6,6 +6,7 @@ int main(int argc, char **argv){
 	srand(time(NULL));
 
 	string fname = argv[1];
+	int cooling_schedule = atoi(argv[2]);
 
 	
 	// MAIN CODE
@@ -35,6 +36,7 @@ int main(int argc, char **argv){
 	double new_logE, delta_logE;
 	double p, u;
 	float T = 100, T0 = 100;
+	float a = 0.0001;
 
 	int rn = 0; // number of runs without improvement
 
@@ -98,9 +100,24 @@ int main(int argc, char **argv){
 			// UPDATE TEMPERATURE
 
 			// COOLING SCHEDULES:
-			T = T0 * (1 - (float)step/(float)max_steps); // linear
-			T = T0 / (1 + log(1 + step)); // logarithmic
 
+			switch(cooling_schedule){
+
+			case 0: // linear
+				T = T0 * (1 - (float)step/(float)max_steps); 
+				break;
+
+			case 1: // logarithmic
+				T = T0 / (1 + log(1 + step));
+				break;
+
+			case 2: // quadratic multiplicative
+				T = T0 / (1 + a * step * step);
+				break;
+
+			}
+			
+			
 
 			step++;
 
@@ -114,7 +131,7 @@ int main(int argc, char **argv){
 	cout << best_logE << endl;
 
 	// WRITE PARTITION TO FILE (OPTIONAL)
-	//partition_write(best_partition, fname, out_path);
+	//partition_write(best_partition, fname);
 
 	// currently unused 
 	//double dlogE = best_logE - true_logE;

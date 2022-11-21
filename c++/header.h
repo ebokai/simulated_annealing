@@ -11,7 +11,7 @@
 using namespace std;
 
 // PARAMETERS =========================
-const int max_steps = 1000;
+const int max_steps = 100000;
 const int n = 20;
 // ====================================
 

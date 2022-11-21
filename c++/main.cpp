@@ -35,8 +35,17 @@ int main(int argc, char **argv){
 	double best_logE = logE;
 	double new_logE, delta_logE;
 	double p, u;
+
+	// cooling schedule parameters
 	float T = 100, T0 = 100;
+	int L = 50;
 	float a = 0.0001;
+
+	int tot_its = 0;
+
+	
+
+	
 
 	int rn = 0; // number of runs without improvement
 
@@ -51,9 +60,11 @@ int main(int argc, char **argv){
 		int nc = 0; // number of steps without improvement this run
 		int step = 0;
 
-		if (rn > 20) {continue;}
+		if (rn > 1) {continue;}
 
-		while ((step < max_steps) && (nc < 500)){
+		while ((step < max_steps) && (nc < 50000)){
+
+			tot_its++;
 
 			// PICK RANDOM CANDIDATE FUNCTION
 			int f = rand()/(RAND_MAX/3);
@@ -101,21 +112,27 @@ int main(int argc, char **argv){
 
 			// COOLING SCHEDULES:
 
-			switch(cooling_schedule){
+			if (na > L){
 
-			case 0: // linear
-				T = T0 * (1 - (float)step/(float)max_steps); 
-				break;
+				switch(cooling_schedule){
 
-			case 1: // logarithmic
-				T = T0 / (1 + log(1 + step));
-				break;
+					case 0: // linear
+						T = T0 * (1 - (float)step/(float)max_steps); 
+						break;
 
-			case 2: // quadratic multiplicative
-				T = T0 / (1 + a * step * step);
-				break;
+					case 1: // logarithmic
+						T = T0 / (1 + log(1 + step));
+						break;
+
+					case 2: // quadratic multiplicative
+						T = T0 / (1 + a * step * step);
+						break;
+
+				}
 
 			}
+
+			
 			
 			
 
@@ -129,6 +146,7 @@ int main(int argc, char **argv){
 
 	cout << true_logE << " " << best_logE << " " << best_logE - true_logE << endl;
 	cout << best_logE << endl;
+	cout << tot_its << endl;
 
 	// WRITE PARTITION TO FILE (OPTIONAL)
 	//partition_write(best_partition, fname);

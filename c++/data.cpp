@@ -39,9 +39,9 @@ void partition_print(map<int, int> partition){
 	cout << "]" << endl;
 }
 
-void partition_write(map<int, int> partition, string fname){
+void partition_write(map<int, int> partition, string fname, string idf, string cs){
 	
-	string fpath = "./partitions/" + fname + "_partition.dat";
+	string fpath = "./partitions/" + fname + "_partition_" + cs + "_" + idf + ".dat";
 	ofstream myfile(fpath);
 
 	map<int, int>::iterator it;

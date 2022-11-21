@@ -6,9 +6,24 @@ int main(int argc, char **argv){
 	srand(time(NULL));
 
 	string fname = argv[1];
-	int cooling_schedule = atoi(argv[2]);
+	string idf = argv[2];
+	int cooling_schedule = atoi(argv[3]);
 
-	string result_file = "./results/" + fname + "_results.dat";
+	string cs;
+
+	switch(cooling_schedule){
+	case 0:
+		cs = "linear";
+		break;
+	case 1:
+		cs = "log";
+		break;
+	case 2:
+		cs = "quad";
+		break;
+	}
+
+	string result_file = "./results/" + fname + "_results_" + cs + "_" + idf + ".dat";
 	ofstream myfile(result_file);
 
 	
@@ -27,6 +42,21 @@ int main(int argc, char **argv){
 	for(int i = 0; i < n; i++){
 		partition[i] = i;
 	}
+
+	// RANDOM PARTITION 
+	int k = 0;
+	int c;
+	for (int i = 0; i < n; i++){
+		c = rand() / (RAND_MAX/(k + 1));
+		partition[i] = c;
+		if ((c + 1) > k){
+			k++;
+		}
+		
+	}
+
+
+
 
 	best_partition = partition;
 	true_partition = partition;
@@ -154,7 +184,7 @@ int main(int argc, char **argv){
 	myfile.close();
 
 	// WRITE PARTITION TO FILE (OPTIONAL)
-	//partition_write(best_partition, fname);
+	partition_write(best_partition, fname, idf, cs);
 
 	// currently unused 
 	//double dlogE = best_logE - true_logE;

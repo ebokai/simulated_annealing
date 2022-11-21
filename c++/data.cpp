@@ -4,7 +4,7 @@ map<uint32_t, int> get_data(int &N, string fname){
 
 	map<uint32_t, int> data;
 	uint32_t state;
-	string fpath = "./data/" + fname + ".dat";
+	string fpath = "../data/set_02/" + fname + ".dat";
 	string line, subline;
 	ifstream myfile(fpath);
 
@@ -37,4 +37,20 @@ void partition_print(map<int, int> partition){
 	}
 
 	cout << "]" << endl;
+}
+
+void partition_write(map<int, int> partition, string fname, string out_path){
+	
+	string fpath = "../sa_comms/" + out_path + "/" + fname + "_comms.dat";
+	ofstream myfile(fpath);
+
+	map<int, int>::iterator it;
+
+	for(it = partition.begin(); it != partition.end(); it++){
+		myfile << it->first << ";" << it->second << endl;
+		
+	}
+
+	myfile.close();
+
 }

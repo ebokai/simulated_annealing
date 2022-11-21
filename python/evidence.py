@@ -29,3 +29,24 @@ def mcm_evidence(data, partition):
 
 	return logE
 
+data = np.loadtxt('./data/J0_mu0_nw0_dat0.dat', dtype=str)
+data = np.array([[int(s) for s in state] for state in data])
+
+c = [1,1,4,2,4,2,3,2,1,4,1,3,1,3,2,3,4,2,3,4]
+
+p = [[] for i in range(4)]
+for i in range(20):
+	p[c[i]-1].append(i)
+print(p)
+
+ev = mcm_evidence(data, p)
+print('LOG E:',ev)
+
+
+p = [[] for i in range(4)]
+for i in range(20):
+	p[c[i]-1].append(19-i)
+print(p)
+
+ev = mcm_evidence(data, p)
+print('LOG E:',ev)

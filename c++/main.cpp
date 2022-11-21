@@ -21,7 +21,7 @@ int main(int argc, char **argv){
 
 	// INITIAL PARTITION
 	for(int i = 0; i < n; i++){
-		partition[i] = i % n;
+		partition[i] = i;
 	}
 
 	best_partition = partition;
@@ -40,7 +40,7 @@ int main(int argc, char **argv){
 
 	for (int run = 0; run < 100; run++){
 
-		// cout << "RUN: " << run << " ====================" << endl;
+		cout << "RUN: " << run << " ====================" << endl;
 
 		T = T0;
 		partition = best_partition;
@@ -50,8 +50,6 @@ int main(int argc, char **argv){
 		int step = 0;
 
 		if (rn > 20) {continue;}
-
-
 
 		while ((step < max_steps) && (nc < 500)){
 
@@ -98,7 +96,12 @@ int main(int argc, char **argv){
 			}
 
 			// UPDATE TEMPERATURE
-			T = T0 * (1 - (float)step/(float)max_steps);
+
+			// COOLING SCHEDULES:
+			T = T0 * (1 - (float)step/(float)max_steps); // linear
+			T = T0 / (1 + log(1 + step)); // logarithmic
+
+
 			step++;
 
 		}
@@ -108,10 +111,14 @@ int main(int argc, char **argv){
 	}
 
 	cout << true_logE << " " << best_logE << " " << best_logE - true_logE << endl;
+	cout << best_logE << endl;
+
+	// WRITE PARTITION TO FILE (OPTIONAL)
+	//partition_write(best_partition, fname, out_path);
 
 	// currently unused 
-	double dlogE = best_logE - true_logE;
-	double voi = get_voi(true_partition, best_partition);
+	//double dlogE = best_logE - true_logE;
+	//double voi = get_voi(true_partition, best_partition);
 
 	return 0;
 }

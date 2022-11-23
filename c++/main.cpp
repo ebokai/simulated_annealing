@@ -40,7 +40,7 @@ int main(int argc, char **argv){
 
 	// INITIAL PARTITION
 	for(int i = 0; i < n; i++){
-		partition[i] = i;
+		partition[i] = i / 5;
 	}
 
 	// RANDOM PARTITION 
@@ -52,7 +52,6 @@ int main(int argc, char **argv){
 		if ((c + 1) > k){
 			k++;
 		}
-		
 	}
 
 
@@ -64,15 +63,16 @@ int main(int argc, char **argv){
 	double logE = evidence(partition, data, N);
 	double true_logE = logE;
 
-	cout << logE << endl;
+	cout << "INITIAL LOG E: " << logE << endl;
 	double best_logE = logE;
 	double new_logE, delta_logE;
 	double p, u;
 
 	// cooling schedule parameters
 	float T = 100, T0 = 100;
-	int L = 50;
-	float a = 0.0001;
+	int L = 100;
+	float a = 1.15129e-9;
+	float b = 0.920883;
 
 	int tot_its = 0;
 
@@ -82,20 +82,21 @@ int main(int argc, char **argv){
 
 	int rn = 0; // number of runs without improvement
 
-	for (int run = 0; run < 100; run++){
+	for (int run = 0; run < 1; run++){
 
 		cout << "RUN: " << run << " ====================" << endl;
 
 		T = T0;
 		partition = best_partition;
 		logE = best_logE;
+		myfile << run << ";" << best_logE << ";" << tot_its << ";" << T << endl;
 		int na = 0; // number of accepted proposals this run
 		int nc = 0; // number of steps without improvement this run
 		int step = 0;
 
-		if (rn > 1) {continue;}
+		if (run > 0) {continue;}
 
-		while ((step < max_steps) && (nc < 50000)){
+		while (step < max_steps){
 
 			tot_its++;
 
@@ -146,12 +147,12 @@ int main(int argc, char **argv){
 
 			// COOLING SCHEDULES:
 
-			if (na > L){
+			if (step % L == 0){
 
 				switch(cooling_schedule){
 
 					case 0: // linear
-						T = T0 * (1 - (float)step/(float)max_steps); 
+						T = T0 * (1 - b * (float)step/(float)max_steps); 
 						break;
 
 					case 1: // logarithmic

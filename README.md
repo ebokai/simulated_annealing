@@ -1,6 +1,6 @@
 # Simulated annealing community detection
 
-Codebase for simulated annealing to find the best partition of binary variables.
+Codebase for simulated annealing to find the best partition of binary variables based on the log-evidence of Minimally Complex Models.
 
 Starting from a random (or pre-specified) partition of n variables into k communities, the algorithm explores the space around the initial partition by proposing elementary modifications. 
 

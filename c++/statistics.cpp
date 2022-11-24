@@ -95,8 +95,6 @@ double get_voi(map<int,int> p1, map<int, int> p2){
 
 	voi = 1 + mut/ent;
 
-	cout << "VOI: " << voi << endl;
-
 	return voi;
 
 

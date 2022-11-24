@@ -20,6 +20,7 @@ int main(int argc, char **argv){
 	double p, u;
 	int step = 0;
 	int steps_since_improve = 0;
+	int max_no_improve = 10000;
 
 	float T0 = 100;
 	float T = T0;
@@ -38,9 +39,16 @@ int main(int argc, char **argv){
 
 	cout << "TRUE LOG E: " << true_logE << endl;
 	cout << "INITIAL LOG E: " << best_logE << endl;
+	cout << "INITIAL PARTITION: ";
 	partition_print(partition);
+	cout << endl;
 
 	while (step < max_steps){
+
+		if (steps_since_improve > max_no_improve) {
+			cout << "No improvement in log-evidence for " << max_no_improve << " iterations. Stopping." << endl;
+			break;
+		}
 
 		// pick random candidate function ---------------------------
 		int f = rand()/(RAND_MAX/3);
@@ -87,6 +95,11 @@ int main(int argc, char **argv){
 
 		step++;
 	}
+
+	cout << endl;
+	cout << "FINAL LOG E: " << best_logE << endl;
+	cout << "DELTA LOG E: " << best_logE - true_logE << endl;
+	cout << "VOI: " << get_voi(true_partition, best_partition) << endl;
 
 
 

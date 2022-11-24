@@ -14,9 +14,12 @@ int main(int argc, char **argv){
 	map<int,int> partition;
 	map<int,int> new_partition;
 	map<int,int> true_partition;
-	map<int,int> best_partition;
+	
 
-	double logE, new_logE, true_logE, best_logE, delta_logE;
+	pStats partition_stats;
+	partition_stats.fname = fname;
+
+	double logE, new_logE, delta_logE;
 	double p, u;
 	int step = 0;
 	int steps_since_improve = 0;
@@ -34,11 +37,12 @@ int main(int argc, char **argv){
 	partition = random_partition();
 
 	logE = evidence(partition, data, N);
-	true_logE = evidence(true_partition, data, N);
-	best_logE = logE;
+	partition_stats.best_logE = logE;
+	partition_stats.best_partition = partition;
+	partition_stats.true_logE = evidence(true_partition, data, N);
 
-	cout << "TRUE LOG E: " << true_logE << endl;
-	cout << "INITIAL LOG E: " << best_logE << endl;
+	cout << "TRUE LOG E: " << partition_stats.true_logE << endl;
+	cout << "INITIAL LOG E: " << partition_stats.best_logE << endl;
 	cout << "INITIAL PARTITION: ";
 	partition_print(partition);
 	cout << endl;
@@ -69,10 +73,10 @@ int main(int argc, char **argv){
 		delta_logE = new_logE - logE;
 
 		// keep track of current best solution ----------------------
-		if (new_logE > best_logE){
-			best_logE = new_logE;
-			best_partition = new_partition;
-			cout << step << " " << T << " " << best_logE << " ";
+		if (new_logE > partition_stats.best_logE){
+			partition_stats.best_logE = new_logE;
+			partition_stats.best_partition = new_partition;
+			cout << step << " " << T << " " << partition_stats.best_logE << " ";
 			partition_print(new_partition);
 			steps_since_improve = 0;
 		} else {
@@ -96,12 +100,14 @@ int main(int argc, char **argv){
 		step++;
 	}
 
+	partition_stats.voi = get_voi(true_partition, partition_stats.best_partition);
 	cout << endl;
-	cout << "FINAL LOG E: " << best_logE << endl;
-	cout << "DELTA LOG E: " << best_logE - true_logE << endl;
-	cout << "VOI: " << get_voi(true_partition, best_partition) << endl;
+	cout << "FINAL LOG E: " << partition_stats.best_logE << endl;
+	cout << "DELTA LOG E: " << partition_stats.best_logE - partition_stats.true_logE << endl;
+	cout << "VOI: " << partition_stats.voi << endl;
 
-	partition_write(best_partition, fname);
+	partition_write(partition_stats);
+	write_statistics(partition_stats);
 
 
 

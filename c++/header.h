@@ -15,10 +15,20 @@ const int max_steps = 100000;
 const int n = 20;
 // ====================================
 
+// STRUCTURES
+struct pStats{
+	string fname;
+	double best_logE;
+	double true_logE;
+	double voi;
+	map<int, int> best_partition;
+}; 
+
 // FUNCTION DEFS ======================
 
 void partition_print(map<int, int> partition);
-void partition_write(map<int, int> partition, string fname);
+void partition_write(pStats partition_stats);
+void write_statistics(pStats partition_stats);
 int max_comm(map<int,int> partition);
 
 map<uint32_t, int> get_data(int &N, string fname);

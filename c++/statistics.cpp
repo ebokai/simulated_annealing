@@ -96,6 +96,22 @@ double get_voi(map<int,int> p1, map<int, int> p2){
 	voi = 1 + mut/ent;
 
 	return voi;
+}
+
+void write_statistics(pStats partition_stats){
+
+	string fpath = "./statistics/" + partition_stats.fname + "_stats.dat";
+	ofstream myfile(fpath);
+
+	myfile << "True log E | Best log E | Delta log E | VOI" << endl;
+	myfile << partition_stats.true_logE << ";";
+	myfile << partition_stats.best_logE << ";";
+	myfile << partition_stats.best_logE - partition_stats.true_logE << ";";
+	myfile << partition_stats.voi << ";" << endl;
+
+	myfile.close();
+
+	
 
 
 }

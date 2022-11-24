@@ -43,12 +43,13 @@ void partition_print(map<int, int> partition){
 	cout << "]" << endl;
 }
 
-void partition_write(map<int, int> partition, string fname){
+void partition_write(pStats partition_stats){
 
 	// WRITE PARTITION TO FILE
 	
-	string fpath = "./partitions/" + fname + "_partition.dat";
+	string fpath = "./partitions/" + partition_stats.fname + "_partition.dat";
 	ofstream myfile(fpath);
+	map<int,int> partition = partition_stats.best_partition;
 
 	map<int, int>::iterator it;
 

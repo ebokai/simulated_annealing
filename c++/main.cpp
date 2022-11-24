@@ -1,195 +1,95 @@
 #include "header.h"
-#include <time.h> 
+#include <time.h>
 
 int main(int argc, char **argv){
 
+	// initialize random seed
 	srand(time(NULL));
 
+	// parse filename
 	string fname = argv[1];
-	string idf = argv[2];
-	int cooling_schedule = atoi(argv[3]);
 
-	string cs;
-
-	switch(cooling_schedule){
-	case 0:
-		cs = "linear";
-		break;
-	case 1:
-		cs = "log";
-		break;
-	case 2:
-		cs = "quad";
-		break;
-	}
-
-	string result_file = "./results/" + fname + "_results_" + cs + "_" + idf + ".dat";
-	ofstream myfile(result_file);
-
-	
-	// MAIN CODE
-
+	// declare variables
 	int N = 0;
-
 	map<int,int> partition;
 	map<int,int> new_partition;
-	map<int,int> best_partition;
 	map<int,int> true_partition;
+	map<int,int> best_partition;
 
+	double logE, new_logE, true_logE, best_logE, delta_logE;
+	double p, u;
+	int step = 0;
+	int steps_since_improve = 0;
+
+	float T0 = 100;
+	float T = T0;
+	int update_schedule = 100;
+
+	// read dataset
 	map<uint32_t, int> data = get_data(N, fname);
 
-	// INITIAL PARTITION
-	for(int i = 0; i < n; i++){
-		partition[i] = i / 5;
-	}
+	// initialize partitions
+	true_partition = fixed_partition(4);
+	partition = random_partition();
 
-	// RANDOM PARTITION 
-	int k = 0;
-	int c;
-	for (int i = 0; i < n; i++){
-		c = rand() / (RAND_MAX/(k + 1));
-		partition[i] = c;
-		if ((c + 1) > k){
-			k++;
-		}
-	}
+	logE = evidence(partition, data, N);
+	true_logE = evidence(true_partition, data, N);
+	best_logE = logE;
 
+	cout << "TRUE LOG E: " << true_logE << endl;
+	cout << "INITIAL LOG E: " << best_logE << endl;
+	partition_print(partition);
 
+	while (step < max_steps){
 
-
-	best_partition = partition;
-	true_partition = partition;
-
-	double logE = evidence(partition, data, N);
-	double true_logE = logE;
-
-	cout << "INITIAL LOG E: " << logE << endl;
-	double best_logE = logE;
-	double new_logE, delta_logE;
-	double p, u;
-
-	// cooling schedule parameters
-	float T = 100, T0 = 100;
-	int L = 100;
-	float a = 1.15129e-9;
-	float b = 0.920883;
-
-	int tot_its = 0;
-
-	
-
-	
-
-	int rn = 0; // number of runs without improvement
-
-	for (int run = 0; run < 1; run++){
-
-		cout << "RUN: " << run << " ====================" << endl;
-
-		T = T0;
-		partition = best_partition;
-		logE = best_logE;
-		myfile << run << ";" << best_logE << ";" << tot_its << ";" << T << endl;
-		int na = 0; // number of accepted proposals this run
-		int nc = 0; // number of steps without improvement this run
-		int step = 0;
-
-		if (run > 0) {continue;}
-
-		while (step < max_steps){
-
-			tot_its++;
-
-			// PICK RANDOM CANDIDATE FUNCTION
-			int f = rand()/(RAND_MAX/3);
-			switch(f){
-
-				case 0:
-				new_partition = merge_partition(partition);
-				break;
-
-				case 1:
-				new_partition = split_partition(partition);
-				break;
-
-				case 2:
-				new_partition = switch_partition(partition);
-				break;
-			}
-
-			// EVALUATE NEW PARTITION 
-			new_logE = evidence(new_partition, data, N);
-			delta_logE = new_logE - logE;
-
-			if (new_logE > best_logE){
-				best_logE = new_logE;
-				best_partition = new_partition;
-				cout << "RUN: " << run << " " << T << " " << best_logE << " " << nc << " ";
-				partition_print(new_partition);
-				myfile << run << ";" << best_logE << ";" << tot_its << ";" << T << endl;
-				nc = 0;
-				rn = 0;
-			} else {
-				nc += 1;
-			}
-
-			// METROPOLIS STEP
-			p = exp(delta_logE/T);
-			u = static_cast <double> (rand()) / static_cast <double> (RAND_MAX);
-
-			if (p > u){
-				na += 1;
-				partition = new_partition;
-				logE = new_logE;
-			}
-
-			// UPDATE TEMPERATURE
-
-			// COOLING SCHEDULES:
-
-			if (step % L == 0){
-
-				switch(cooling_schedule){
-
-					case 0: // linear
-						T = T0 * (1 - b * (float)step/(float)max_steps); 
-						break;
-
-					case 1: // logarithmic
-						T = T0 / (1 + log(1 + step));
-						break;
-
-					case 2: // quadratic multiplicative
-						T = T0 / (1 + a * step * step);
-						break;
-
-				}
-
-			}
-
-			
-			
-			
-
-			step++;
-
+		// pick random candidate function ---------------------------
+		int f = rand()/(RAND_MAX/3);
+		switch(f){
+		case 0:
+			new_partition = merge_partition(partition);
+			break;
+		case 1:
+			new_partition = split_partition(partition);
+			break;
+		case 2:
+			new_partition = switch_partition(partition);
+			break;
 		}
 
-		rn += 1;
-		cout << rn << endl;
+		// evaluate new partition -----------------------------------
+		new_logE = evidence(new_partition, data, N);
+		delta_logE = new_logE - logE;
+
+		// keep track of current best solution ----------------------
+		if (new_logE > best_logE){
+			best_logE = new_logE;
+			best_partition = new_partition;
+			cout << step << " " << T << " " << best_logE << " ";
+			partition_print(new_partition);
+			steps_since_improve = 0;
+		} else {
+			steps_since_improve++;
+		}
+
+		// metropolis step ------------------------------------------
+		p = exp(delta_logE/T);
+		u = static_cast <double> (rand()) / static_cast <double> (RAND_MAX);
+
+		if (p > u){
+			partition = new_partition;
+			logE = new_logE;
+		}
+
+		// cooling schedule -----------------------------------------
+		if (step % update_schedule == 0){
+			T = T0 / (1 + log(1 + step));
+		}
+
+		step++;
 	}
 
-	cout << true_logE << " " << best_logE << " " << best_logE - true_logE << endl;
-	cout << best_logE << endl;
-	cout << tot_its << endl;
-	myfile.close();
 
-	// WRITE PARTITION TO FILE (OPTIONAL)
-	partition_write(best_partition, fname, idf, cs);
 
-	// currently unused 
-	//double dlogE = best_logE - true_logE;
-	//double voi = get_voi(true_partition, best_partition);
 
 	return 0;
 }

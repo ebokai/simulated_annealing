@@ -2,6 +2,8 @@
 
 map<uint32_t, int> get_data(int &N, string fname){
 
+	// PARSE DATAFILE 
+
 	map<uint32_t, int> data;
 	uint32_t state;
 	string fpath = "./data/" + fname + ".dat";
@@ -22,6 +24,8 @@ map<uint32_t, int> get_data(int &N, string fname){
 
 void partition_print(map<int, int> partition){
 
+	// CODE FOR PRINTING PARTITION
+
 	int np = max_comm(partition);
 
 	cout << "[";
@@ -40,6 +44,8 @@ void partition_print(map<int, int> partition){
 }
 
 void partition_write(map<int, int> partition, string fname, string idf, string cs){
+
+	// WRITE PARTITION TO FILE
 	
 	string fpath = "./partitions/" + fname + "_partition_" + cs + "_" + idf + ".dat";
 	ofstream myfile(fpath);
@@ -48,7 +54,6 @@ void partition_write(map<int, int> partition, string fname, string idf, string c
 
 	for(it = partition.begin(); it != partition.end(); it++){
 		myfile << it->first << ";" << it->second << endl;
-		
 	}
 
 	myfile.close();

@@ -6,12 +6,18 @@ bool compare(const pair<int, int>&a, const pair<int, int>&b){
 }
 
 int rand_ab(int a, int b){
+	// return a or b
 	int x = rand()/(RAND_MAX/2);
 	return a + x * (b - a);
 }
 
 int max_comm(map<int,int> partition){
+
+	// return maximum community index
+	// for counting communities
+	
 	int maxc = 0;
+
 	for (int i = 0; i < n; i++)
 	{
 		if(partition[i] > maxc)
@@ -21,6 +27,38 @@ int max_comm(map<int,int> partition){
 	}
 	return maxc;
 }
+
+// FIXED PARTITION
+map<int, int> fixed_partition(int nc){
+
+	map<int, int> partition;
+	int npc = n / nc;
+	for (int i = 0; i < n; i++){
+		partition[i] = i / npc;
+	}
+
+	return partition;
+}
+
+
+// RANDOM PARTITION
+map<int, int> random_partition(){
+
+	map<int,int> partition;
+
+	int k = 0;
+	int c;
+	for (int i = 0; i < n; i++){
+		c = rand() / (RAND_MAX/(k + 1));
+		partition[i] = c;
+		if ((c + 1) > k){
+			k++;
+		}
+	}
+	return partition;
+
+}
+
 
 // MERGE PARTITIONS 
 map<int, int> merge_partition(map<int,int> partition){
@@ -118,10 +156,12 @@ map<int, int> switch_partition(map<int,int> partition){
 	int np = max_comm(partition) + 1;
 	if (np < 2) {return partition;}
 
+	// pick a node ---------------------
 	int node = rand()/(RAND_MAX/n);
 	int pn = partition[node];
+	// ---------------------------------
 
-	// prevent emptying partition 
+	// prevent emptying partition ------
 	int nx = 0;
 	for (int i = 0; i < n; i++){
 		if(partition[i] == pn){
@@ -130,13 +170,15 @@ map<int, int> switch_partition(map<int,int> partition){
 	}
 
 	if (nx == 1){return partition;}
+	// ---------------------------------
 
-	// pick new community for node
+	// pick new community for node -----
 	int p1 = rand()/(RAND_MAX/np);
 	while (p1 == pn){
 		p1 = rand()/(RAND_MAX/np);
 	} 
 	partition[node] = p1;
+	// ---------------------------------
 
 	return partition;
 }

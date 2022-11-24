@@ -18,7 +18,7 @@ const int n = 20;
 // FUNCTION DEFS ======================
 
 void partition_print(map<int, int> partition);
-void partition_write(map<int, int> partition, string fname, string idf, string cs);
+void partition_write(map<int, int> partition, string fname);
 int max_comm(map<int,int> partition);
 
 map<uint32_t, int> get_data(int &N, string fname);

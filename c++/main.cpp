@@ -101,6 +101,8 @@ int main(int argc, char **argv){
 	cout << "DELTA LOG E: " << best_logE - true_logE << endl;
 	cout << "VOI: " << get_voi(true_partition, best_partition) << endl;
 
+	partition_write(best_partition, fname);
+
 
 
 

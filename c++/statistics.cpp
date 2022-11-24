@@ -107,7 +107,7 @@ void write_statistics(pStats partition_stats){
 	myfile << partition_stats.true_logE << ";";
 	myfile << partition_stats.best_logE << ";";
 	myfile << partition_stats.best_logE - partition_stats.true_logE << ";";
-	myfile << partition_stats.voi << ";" << endl;
+	myfile << partition_stats.voi << endl;
 
 	myfile.close();
 

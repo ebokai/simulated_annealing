@@ -18,7 +18,7 @@ double icc_evidence(uint64_t community, map<uint64_t, int> &data, int &N){
 			logE += lgamma(k + 0.5) - lgamma(0.5);
 		}
 
-	cout << rank << endl;
+	cout << "ICC rank: " << rank << endl;
 
 	return logE;
 }

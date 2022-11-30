@@ -12,6 +12,8 @@ const int n = 20;
 
 vector<pair<uint64_t, double>> fixed_partition(int nc, int npc);
 vector<pair<uint64_t, double>> merge_partition(vector<pair<uint64_t, double>> partition, map<uint64_t, int> &data, int &N);
+vector<pair<uint64_t, double>> split_partition(vector<pair<uint64_t, double>> partition, map<uint64_t, int> &data, int &N);
+vector<pair<uint64_t, double>> switch_partition(vector<pair<uint64_t, double>> partition, map<uint64_t, int> &data, int &N, int rd);
 
 map<uint64_t, int> get_data(int &N, string fname);
 map<uint64_t, int> build_pdata(map<uint64_t, int> &data, uint64_t pbit);

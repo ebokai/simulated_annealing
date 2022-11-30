@@ -11,18 +11,15 @@ int main(int argc, char **argv){
 
 	vector<pair<uint64_t, double>> partition = fixed_partition(4, 5);
 	map<uint64_t, int> data = get_data(N, fname);
-	pair<uint64_t, double> community;
-
-	double logE = 0;
+	uint64_t community;
 
 	for (int i = 0; i < 4; i++){
-		community = partition[i]; 
-		logE += icc_evidence(community, data, N);
-
+		community = partition[i].first; 
+		partition[i] = make_pair(community, icc_evidence(community, data, N));
 	}
 	
+	partition = merge_partition(partition, data, N);
 
-	cout << logE << endl;
-	
+
 	return 0;
 }

@@ -1,14 +1,14 @@
 #include "header.h"
 
-double icc_evidence(pair<uint64_t, double> community, map<uint64_t, int> data, int &N){
+double icc_evidence(uint64_t community, map<uint64_t, int> &data, int &N){
 
 	double logE = 0;
 	int k;
 
-	map<uint64_t, int> pdata = build_pdata(data, community.first);
+	map<uint64_t, int> pdata = build_pdata(data, community);
 	map<uint64_t, int>::iterator it;
 
-	unsigned int rank = count_bits(community.first);
+	unsigned int rank = count_bits(community);
 	double rank_pow = (1 << (rank - 1));
 	double pf = lgamma(rank_pow) - lgamma(N + rank_pow);
 
@@ -23,7 +23,7 @@ double icc_evidence(pair<uint64_t, double> community, map<uint64_t, int> data, i
 	return logE;
 }
 
-map<uint64_t, int> build_pdata(map<uint64_t, int> data, uint64_t pbit){
+map<uint64_t, int> build_pdata(map<uint64_t, int> &data, uint64_t pbit){
 
 	map<uint64_t, int> pdata;
 	map<uint64_t, int>::iterator it;

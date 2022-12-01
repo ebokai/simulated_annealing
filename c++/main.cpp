@@ -1,5 +1,8 @@
 #include "header.h"
 #include <time.h>
+#include <ctime> 
+#include <ratio>
+#include <chrono>
 
 int main(int argc, char **argv){
 
@@ -15,7 +18,6 @@ int main(int argc, char **argv){
 	map<int,int> new_partition;
 	map<int,int> true_partition;
 	
-
 	pStats partition_stats;
 	partition_stats.fname = fname;
 
@@ -36,6 +38,7 @@ int main(int argc, char **argv){
 	true_partition = fixed_partition(4);
 	partition = random_partition();
 
+
 	logE = evidence(partition, data, N);
 	partition_stats.best_logE = logE;
 	partition_stats.best_partition = partition;
@@ -47,6 +50,7 @@ int main(int argc, char **argv){
 	partition_print(partition);
 	cout << endl;
 
+	auto start = chrono::system_clock::now();
 	while (step < max_steps){
 
 		if (steps_since_improve > max_no_improve) {
@@ -99,6 +103,11 @@ int main(int argc, char **argv){
 
 		step++;
 	}
+
+	auto end = chrono::system_clock::now();
+	chrono::duration<double> elapsed = end - start;
+	cout << "Elapsed time: " << elapsed.count() << "s" << endl;
+	cout << "Iterations per second: " << static_cast <double> (step) / elapsed.count() << endl;
 
 	partition_stats.voi = get_voi(true_partition, partition_stats.best_partition);
 	cout << endl;

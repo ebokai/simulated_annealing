@@ -21,10 +21,33 @@ vector<pair<uint64_t, double>> fixed_partition(int nc, int npc){
 	return partition;
 }
 
+vector<pair<uint64_t, double>> random_partition(){
+
+	vector<pair<uint64_t, double>> partition;
+	uint64_t c; // candidate community
+	uint64_t assigned = 0; // assigned nodes
+	
+	while(bitset<n>(~assigned).count() > 0){
+		c = rand();
+		c = c - (assigned & c); // remove already assigned nodes from candidate
+		assigned += c; // add newly assigned nodes
+
+		// avoid adding empty communities
+		if (bitset<n>(c).count() > 0){
+			partition.push_back(make_pair(c,0));
+			cout << "new community: " << bitset<n>(c) << endl;
+			cout << "assigned nodes: " << bitset<n>(assigned) << endl;
+			cout << endl;
+		}
+	}
+
+	return partition;
+}
+
 Partition merge_partition(Partition p_struct, int &N){
 
 	int nc = p_struct.current_partition.size();
-	cout << nc << endl;
+	//cout << nc << endl;
 
 	if (nc < 2){return p_struct;}
 	int p1, p2;
@@ -34,7 +57,7 @@ Partition merge_partition(Partition p_struct, int &N){
 		p2 = rand()/(RAND_MAX/nc);
 	}
 
-	cout << p1 << " " << p2 << endl;
+	//cout << p1 << " " << p2 << endl;
 
 	int pl, ph;
 	if (p1 > p2){
@@ -51,22 +74,31 @@ Partition merge_partition(Partition p_struct, int &N){
 	uint64_t c2 = p_struct.current_partition[p2].first;
 	double l2 = p_struct.current_partition[p2].second;
 
-	p_struct.current_partition.erase(p_struct.current_partition.begin() + ph);
-	p_struct.current_partition.erase(p_struct.current_partition.begin() + pl);
-
 	uint64_t new_c = c1 + c2;
 
-	cout << bitset<n>(c1) << endl;
-	cout << bitset<n>(c2) << endl;
-	cout << bitset<n>(new_c) << endl; 
+	//cout << bitset<n>(c1) << endl;
+	//cout << bitset<n>(c2) << endl;
+	//cout << bitset<n>(new_c) << endl; 
 
 	double new_logE = icc_evidence(new_c, p_struct.data, N);
-	p_struct.current_partition.push_back(make_pair(new_c, new_logE));
+	double dlogE = new_logE - l1 - l2;
 
-	nc = p_struct.current_partition.size();
+	double p = exp(dlogE/p_struct.T);
+	double u = static_cast <double> (rand()) / static_cast <double> (RAND_MAX);
 
-	cout << nc << endl;
-	cout << new_logE - l1 - l2 << endl;
+	if (p > u){
+		p_struct.current_partition.erase(p_struct.current_partition.begin() + ph);
+		p_struct.current_partition.erase(p_struct.current_partition.begin() + pl);
+		p_struct.current_partition.push_back(make_pair(new_c, new_logE));
+		p_struct.current_logE += dlogE;
+	}
+
+
+	
+	
+
+	//cout << nc << endl;
+	//cout << dlogE << endl;
 
 	return p_struct;
 
@@ -76,9 +108,9 @@ Partition split_partition(Partition p_struct, int &N){
 
 	int nc = p_struct.current_partition.size();
 
-	int p = rand()/(RAND_MAX/nc);
-	uint64_t c = p_struct.current_partition[p].first;
-	double logE = p_struct.current_partition[p].second;
+	int p1 = rand()/(RAND_MAX/nc);
+	uint64_t c = p_struct.current_partition[p1].first;
+	double logE = p_struct.current_partition[p1].second;
 	
 	int t = 0;
 
@@ -97,23 +129,30 @@ Partition split_partition(Partition p_struct, int &N){
 		t++;
 	}
 
-	cout << bitset<n>(c) << endl; 
-	cout << bitset<n>(c1) << endl;
-	cout << bitset<n>(c2) << endl;
+	//cout << bitset<n>(c) << endl; 
+	//cout << bitset<n>(c1) << endl;
+	//cout << bitset<n>(c2) << endl;
 	
-	p_struct.current_partition.erase(p_struct.current_partition.begin() + p);
 
 	double new_l1 = icc_evidence(c1, p_struct.data, N);
 	double new_l2 = icc_evidence(c2, p_struct.data, N);
+	double dlogE = new_l1 + new_l2 - logE;
 
-	p_struct.current_partition.push_back(make_pair(c1, new_l1));
-	p_struct.current_partition.push_back(make_pair(c2, new_l2));
+	double p = exp(dlogE/p_struct.T);
+	double u = static_cast <double> (rand()) / static_cast <double> (RAND_MAX);
 
-	nc = p_struct.current_partition.size();
+	if (p > u){
+		p_struct.current_partition.erase(p_struct.current_partition.begin() + p1);
+		p_struct.current_partition.push_back(make_pair(c1, new_l1));
+		p_struct.current_partition.push_back(make_pair(c2, new_l2));
+		p_struct.current_logE += dlogE;
+	}
 
-	cout << nc << endl;
-	cout << new_l1 + new_l2 - logE << endl;
-	cout << "got stuck " << t << " times." << endl;
+
+	// nc = p_struct.current_partition.size();
+	//cout << nc << endl;
+	//cout << dlogE << endl;
+	//cout << "got stuck " << t << " times." << endl;
 
 	return p_struct;
 }
@@ -138,35 +177,53 @@ Partition switch_partition(Partition p_struct, int &N, int rd){
 	uint64_t z = p_struct.current_partition[p2].first;
 	double ly = p_struct.current_partition[p1].second;
 	double lz = p_struct.current_partition[p2].second;
+	double dlogE, p, u;
 
 	if (((x & y) == x) && (x != y)){
 		y = y - x;
 		z = z + x;
 		double lny = icc_evidence(y, p_struct.data, N);
 		double lnz = icc_evidence(z, p_struct.data, N);
-		p_struct.current_partition[p1] = make_pair(y, lny);
-		p_struct.current_partition[p2] = make_pair(z, lnz);
+		dlogE = lny + lnz - ly - lz;
 
-		cout << lny + lnz - ly - lz << endl;
+		p = exp(dlogE/p_struct.T);
+		u = static_cast <double> (rand()) / static_cast <double> (RAND_MAX);
+		if (p > u){
+			p_struct.current_partition[p1] = make_pair(y, lny);
+			p_struct.current_partition[p2] = make_pair(z, lnz);
+			p_struct.current_logE += dlogE;
+		}
+
+		
+
+		//cout << dlogE << endl;
 
 	} else if (((x & z) == x) && (x != z)) {
 		z = z - x;
 		y = y + x;
 		double lny = icc_evidence(y, p_struct.data, N);
 		double lnz = icc_evidence(z, p_struct.data, N);
-		p_struct.current_partition[p1] = make_pair(y, lny);
-		p_struct.current_partition[p2] = make_pair(z, lnz);
+		dlogE = lny + lnz - ly - lz;
 
-		cout << lny + lnz - ly - lz << endl;
+		p = exp(dlogE/p_struct.T);
+		u = static_cast <double> (rand()) / static_cast <double> (RAND_MAX);
+		if (p > u){
+			p_struct.current_partition[p1] = make_pair(y, lny);
+			p_struct.current_partition[p2] = make_pair(z, lnz);
+			p_struct.current_logE += dlogE;
+		}
+
+
+		//cout << dlogE << endl;
 		
 	} else {
-		cout << "node not in partition" << endl;
+		//cout << "node not in partition" << endl;
 		// call function recursively until switch is found
 		p_struct = switch_partition(p_struct, N, rd);
 
 	}
 
-	cout << "recursion depth: " << rd << endl;
+	//cout << "recursion depth: " << rd << endl;
 
 	return p_struct;
 }

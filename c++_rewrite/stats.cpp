@@ -8,7 +8,7 @@ double icc_evidence(uint64_t community, map<uint64_t, int> &data, int &N){
 	map<uint64_t, int> pdata = build_pdata(data, community);
 	map<uint64_t, int>::iterator it;
 
-	unsigned int rank = count_bits(community);
+	unsigned int rank = (bitset<n>(community).count());
 	double rank_pow = (1 << (rank - 1));
 	double pf = lgamma(rank_pow) - lgamma(N + rank_pow);
 
@@ -18,7 +18,7 @@ double icc_evidence(uint64_t community, map<uint64_t, int> &data, int &N){
 			logE += lgamma(k + 0.5) - lgamma(0.5);
 		}
 
-	cout << "ICC rank: " << rank << endl;
+	//cout << "ICC rank: " << rank << endl;
 
 	return logE;
 }
@@ -45,11 +45,10 @@ map<uint64_t, int> build_pdata(map<uint64_t, int> &data, uint64_t pbit){
 
 }
 
-unsigned int count_bits(uint64_t number){
-	unsigned int count = 0;
-	while (number != 0){
-		count++;
-		number &= number - 1;
+void print_partition(Partition p_struct){
+	uint64_t community;
+	for (unsigned int i = 0; i < p_struct.current_partition.size(); i++){
+		community = p_struct.current_partition[i].first;
+		cout << bitset<n>(community) << endl;
 	}
-	return count;
 }

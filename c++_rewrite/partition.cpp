@@ -21,12 +21,12 @@ vector<pair<uint64_t, double>> fixed_partition(int nc, int npc){
 	return partition;
 }
 
-vector<pair<uint64_t, double>> merge_partition(vector<pair<uint64_t, double>> partition, map<uint64_t, int> &data, int &N){
+Partition merge_partition(Partition p_struct, int &N){
 
-	int nc = partition.size();
+	int nc = p_struct.current_partition.size();
 	cout << nc << endl;
 
-	if (nc < 2){return partition;}
+	if (nc < 2){return p_struct;}
 	int p1, p2;
 
 	while (p1 == p2){
@@ -45,14 +45,14 @@ vector<pair<uint64_t, double>> merge_partition(vector<pair<uint64_t, double>> pa
 		pl = p1;
 	}
 
-	uint64_t c1 = partition[p1].first;
-	double l1 = partition[p1].second;
+	uint64_t c1 = p_struct.current_partition[p1].first;
+	double l1 = p_struct.current_partition[p1].second;
 
-	uint64_t c2 = partition[p2].first;
-	double l2 = partition[p2].second;
+	uint64_t c2 = p_struct.current_partition[p2].first;
+	double l2 = p_struct.current_partition[p2].second;
 
-	partition.erase(partition.begin() + ph);
-	partition.erase(partition.begin() + pl);
+	p_struct.current_partition.erase(p_struct.current_partition.begin() + ph);
+	p_struct.current_partition.erase(p_struct.current_partition.begin() + pl);
 
 	uint64_t new_c = c1 + c2;
 
@@ -60,30 +60,30 @@ vector<pair<uint64_t, double>> merge_partition(vector<pair<uint64_t, double>> pa
 	cout << bitset<n>(c2) << endl;
 	cout << bitset<n>(new_c) << endl; 
 
-	double new_logE = icc_evidence(new_c, data, N);
-	partition.push_back(make_pair(new_c, new_logE));
+	double new_logE = icc_evidence(new_c, p_struct.data, N);
+	p_struct.current_partition.push_back(make_pair(new_c, new_logE));
 
-	nc = partition.size();
+	nc = p_struct.current_partition.size();
 
 	cout << nc << endl;
 	cout << new_logE - l1 - l2 << endl;
 
-	return partition;
+	return p_struct;
 
 }
 
-vector<pair<uint64_t, double>> split_partition(vector<pair<uint64_t, double>> partition, map<uint64_t, int> &data, int &N){
+Partition split_partition(Partition p_struct, int &N){
 
-	int nc = partition.size();
+	int nc = p_struct.current_partition.size();
 
 	int p = rand()/(RAND_MAX/nc);
-	uint64_t c = partition[p].first;
-	double logE = partition[p].second;
+	uint64_t c = p_struct.current_partition[p].first;
+	double logE = p_struct.current_partition[p].second;
 	
 	int t = 0;
 
 	// can't split partitions with one node
-	if (bitset<n>(c).count() == 1){return partition;}
+	if (bitset<n>(c).count() == 1){return p_struct;}
 
 	uint64_t mask = rand();
 	uint64_t c1 = (c & mask);
@@ -101,29 +101,29 @@ vector<pair<uint64_t, double>> split_partition(vector<pair<uint64_t, double>> pa
 	cout << bitset<n>(c1) << endl;
 	cout << bitset<n>(c2) << endl;
 	
-	partition.erase(partition.begin() + p);
+	p_struct.current_partition.erase(p_struct.current_partition.begin() + p);
 
-	double new_l1 = icc_evidence(c1, data, N);
-	double new_l2 = icc_evidence(c2, data, N);
+	double new_l1 = icc_evidence(c1, p_struct.data, N);
+	double new_l2 = icc_evidence(c2, p_struct.data, N);
 
-	partition.push_back(make_pair(c1, new_l1));
-	partition.push_back(make_pair(c2, new_l2));
+	p_struct.current_partition.push_back(make_pair(c1, new_l1));
+	p_struct.current_partition.push_back(make_pair(c2, new_l2));
 
-	nc = partition.size();
+	nc = p_struct.current_partition.size();
 
 	cout << nc << endl;
 	cout << new_l1 + new_l2 - logE << endl;
 	cout << "got stuck " << t << " times." << endl;
 
-	return partition;
+	return p_struct;
 }
 
-vector<pair<uint64_t, double>> switch_partition(vector<pair<uint64_t, double>> partition, map<uint64_t, int> &data, int &N, int rd){
+Partition switch_partition(Partition p_struct, int &N, int rd){
 
 	rd++;
 
-	int nc = partition.size();
-	if (nc < 2) {return partition;}
+	int nc = p_struct.current_partition.size();
+	if (nc < 2) {return p_struct;}
 
 	int i = rand()/(RAND_MAX/n);
 	uint64_t x = (1 << i);
@@ -134,39 +134,39 @@ vector<pair<uint64_t, double>> switch_partition(vector<pair<uint64_t, double>> p
 		p2 = rand()/(RAND_MAX/nc);
 	}
 
-	uint64_t y = partition[p1].first;
-	uint64_t z = partition[p2].first;
-	double ly = partition[p1].second;
-	double lz = partition[p2].second;
+	uint64_t y = p_struct.current_partition[p1].first;
+	uint64_t z = p_struct.current_partition[p2].first;
+	double ly = p_struct.current_partition[p1].second;
+	double lz = p_struct.current_partition[p2].second;
 
 	if (((x & y) == x) && (x != y)){
 		y = y - x;
 		z = z + x;
-		double lny = icc_evidence(y, data, N);
-		double lnz = icc_evidence(z, data, N);
-		partition[p1] = make_pair(y, lny);
-		partition[p2] = make_pair(z, lnz);
+		double lny = icc_evidence(y, p_struct.data, N);
+		double lnz = icc_evidence(z, p_struct.data, N);
+		p_struct.current_partition[p1] = make_pair(y, lny);
+		p_struct.current_partition[p2] = make_pair(z, lnz);
 
 		cout << lny + lnz - ly - lz << endl;
 
 	} else if (((x & z) == x) && (x != z)) {
 		z = z - x;
 		y = y + x;
-		double lny = icc_evidence(y, data, N);
-		double lnz = icc_evidence(z, data, N);
-		partition[p1] = make_pair(y, lny);
-		partition[p2] = make_pair(z, lnz);
+		double lny = icc_evidence(y, p_struct.data, N);
+		double lnz = icc_evidence(z, p_struct.data, N);
+		p_struct.current_partition[p1] = make_pair(y, lny);
+		p_struct.current_partition[p2] = make_pair(z, lnz);
 
 		cout << lny + lnz - ly - lz << endl;
 		
 	} else {
 		cout << "node not in partition" << endl;
 		// call function recursively until switch is found
-		partition = switch_partition(partition, data, N, rd);
+		p_struct = switch_partition(p_struct, N, rd);
 
 	}
 
 	cout << "recursion depth: " << rd << endl;
 
-	return partition;
+	return p_struct;
 }

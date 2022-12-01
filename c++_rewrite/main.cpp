@@ -14,8 +14,8 @@ int main(int argc, char **argv){
 	int rd = 0;
 
 	Partition p_struct;
-	p_struct.current_partition = fixed_partition(4, 5);
-	//p_struct.current_partition = random_partition();
+	//p_struct.current_partition = fixed_partition(4, 5);
+	p_struct.current_partition = random_partition();
 	p_struct.data = get_data(N, fname);
 
  	// CALCULATE LOG E FOR GENERATED COMMUNITIES
@@ -24,7 +24,7 @@ int main(int argc, char **argv){
 		community = p_struct.current_partition[i].first; 
 		p_struct.current_partition[i] = make_pair(community, icc_evidence(community, p_struct.data, N));
 		p_struct.current_logE += p_struct.current_partition[i].second;
-		cout << bitset<n>(p_struct.current_partition[i].first) << endl;
+		// cout << bitset<n>(p_struct.current_partition[i].first) << endl;
 	}
 
 	cout << "initial log-evidence: " << p_struct.current_logE << endl;
@@ -38,7 +38,6 @@ int main(int argc, char **argv){
 	p_struct.best_partition = p_struct.current_partition;
 	p_struct.best_logE = p_struct.current_logE;
 
-	print_partition(p_struct);
 	cout << "==========" << endl;
 
 	auto start = chrono::system_clock::now();

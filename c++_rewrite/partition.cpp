@@ -15,7 +15,7 @@ vector<pair<uint64_t, double>> fixed_partition(int nc, int npc){
 		}
 
 		partition.push_back(make_pair(p,0));
-		cout << bitset<n>(p) << endl; 
+		//cout << bitset<n>(p) << endl; 
 	}
 
 	return partition;
@@ -44,7 +44,7 @@ vector<pair<uint64_t, double>> random_partition(){
 	return partition;
 }
 
-Partition merge_partition(Partition p_struct, int &N){
+Partition merge_partition(Partition &p_struct, int &N){
 
 	int nc = p_struct.current_partition.size();
 	//cout << nc << endl;
@@ -104,7 +104,7 @@ Partition merge_partition(Partition p_struct, int &N){
 
 }
 
-Partition split_partition(Partition p_struct, int &N){
+Partition split_partition(Partition &p_struct, int &N){
 
 	int nc = p_struct.current_partition.size();
 
@@ -157,7 +157,7 @@ Partition split_partition(Partition p_struct, int &N){
 	return p_struct;
 }
 
-Partition switch_partition(Partition p_struct, int &N, int rd){
+Partition switch_partition(Partition &p_struct, int &N, int rd){
 
 	rd++;
 

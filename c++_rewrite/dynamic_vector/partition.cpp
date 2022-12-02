@@ -97,7 +97,7 @@ Partition split_partition(Partition &p_struct, int &N){
 	uint64_t c2 = (c & (~mask));
 	
 	// prevent empty partition
-	while ((c1 == 0) || (c2 == 0)){
+	while ((bitset<n>(c1) == 0) || (bitset<n>(c2) == 0)){
 		mask = rand();
 		c1 = (c & mask);
 		c2 = (c & (~mask));

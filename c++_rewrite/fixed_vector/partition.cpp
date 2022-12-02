@@ -1,12 +1,12 @@
 #include "header.h"
 
-vector<int> get_occupied(Partition &p_struct){
+vector<int> get_occupied(Partition &p_struct, unsigned int k){
 
 	uint64_t c;
 	vector<int> idx;
 	for (int i = 0; i < n; i++){
 		c = p_struct.current_partition[i].first;
-		if (bitset<n>(c).count() > 0){
+		if (bitset<n>(c).count() > k){
 			idx.push_back(i);
 		}
 	}
@@ -66,9 +66,12 @@ Partition random_partition(Partition &p_struct){
 Partition merge_partition(Partition &p_struct, int &N){
 
 	int nc = bitset<n>(p_struct.occupied).count();
-	if (nc < 2){return p_struct;}
+	if (nc < 2){
+		cout << "invalid merge" << endl;
+		return p_struct;
+	}
 
-	vector<int> idx = get_occupied(p_struct);
+	vector<int> idx = get_occupied(p_struct, 0);
 
 	int n1 = rand()/(RAND_MAX/(idx.size()));
 	int k1 = 1 + rand()/(RAND_MAX/(idx.size()-1));
@@ -109,12 +112,15 @@ Partition merge_partition(Partition &p_struct, int &N){
 
 Partition split_partition(Partition &p_struct, int &N){
 
-	vector<int> idx = get_occupied(p_struct);
+	vector<int> idx = get_occupied(p_struct, 1);
+	if (idx.size() == 0){return p_struct;}
 	int n1 = rand()/(RAND_MAX/idx.size());
 	int p1 = idx[n1];
 
 	uint64_t c = p_struct.current_partition[p1].first;
-	if (bitset<n>(c).count() == 1){return p_struct;}
+	if (bitset<n>(c).count() == 1){
+		cout << "invalid split" << endl;
+		return p_struct;}
 	double logE = p_struct.current_partition[p1].second;
 
 	// can't split partitions with one node
@@ -162,8 +168,12 @@ Partition split_partition(Partition &p_struct, int &N){
 
 Partition switch_partition(Partition &p_struct, int &N){
 
+	// RE-WRITE THIS!
+
 	int nc = bitset<n>(p_struct.occupied).count();
-	if (nc < 2){return p_struct;}
+	if (nc < 2){
+		cout << "invalid switch" << endl;
+		return p_struct;}
 
 	int node = rand()/(RAND_MAX/n);
 	uint64_t x = (1 << node);
@@ -180,7 +190,9 @@ Partition switch_partition(Partition &p_struct, int &N){
 		k = bitset<n>(c).count(); // check if comm. i occupied 
 		cx = bitset<n>(c & x).count();
 		
-		if ((cx > 0) && k < 2){return p_struct;}
+		if ((cx > 0) && k < 2){
+			// cout << "invalid switch - 2: " << bitset<n>(c) << " " << bitset<n>(x) << endl;
+			return p_struct;}
 
 		if (cx > 0){
 			// remove node from containing partition

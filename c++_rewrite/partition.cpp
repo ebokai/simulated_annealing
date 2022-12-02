@@ -50,23 +50,24 @@ Partition merge_partition(Partition &p_struct, int &N){
 	//cout << nc << endl;
 
 	if (nc < 2){return p_struct;}
-	int p1, p2;
 
-	while (p1 == p2){
-		p1 = rand()/(RAND_MAX/nc);
-		p2 = rand()/(RAND_MAX/nc);
-	}
+	int p1 = rand()/(RAND_MAX/nc);
+	int k1 = 1 + rand()/(RAND_MAX/(nc-1));
+	int p2 = (p1 + k1) % nc;
 
-	//cout << p1 << " " << p2 << endl;
+	//cout << nc << " " << p1 << " " << p2 << " " << k1 << endl;
 
 	int pl, ph;
-	if (p1 > p2){
-		ph = p1;
-		pl = p2;
-	} else {
-		ph = p2;
-		pl = p1;
-	}
+	// if (p1 > p2){
+	// 	ph = p1;
+	// 	pl = p2;
+	// } else {
+	// 	ph = p2;
+	// 	pl = p1;
+	// }
+
+	ph = (p1 + p2 + abs(p1-p2))/2;
+	pl = (p1 + p2 - abs(p1-p2))/2;
 
 	uint64_t c1 = p_struct.current_partition[p1].first;
 	double l1 = p_struct.current_partition[p1].second;
@@ -92,10 +93,6 @@ Partition merge_partition(Partition &p_struct, int &N){
 		p_struct.current_partition.push_back(make_pair(new_c, new_logE));
 		p_struct.current_logE += dlogE;
 	}
-
-
-	
-	
 
 	//cout << nc << endl;
 	//cout << dlogE << endl;
@@ -167,11 +164,15 @@ Partition switch_partition(Partition &p_struct, int &N, int rd){
 	int i = rand()/(RAND_MAX/n);
 	uint64_t x = (1 << i);
 
-	int p1, p2;
-	while (p1 == p2){
-		p1 = rand()/(RAND_MAX/nc);
-		p2 = rand()/(RAND_MAX/nc);
-	}
+	// int p1, p2;
+	// while (p1 == p2){
+	// 	p1 = rand()/(RAND_MAX/nc);
+	// 	p2 = rand()/(RAND_MAX/nc);
+	// }
+
+	int p1 = rand()/(RAND_MAX/nc);
+	int k1 = 1 + rand()/(RAND_MAX/(nc-1));
+	int p2 = (p1 + k1) % nc;
 
 	uint64_t y = p_struct.current_partition[p1].first;
 	uint64_t z = p_struct.current_partition[p2].first;

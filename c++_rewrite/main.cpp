@@ -42,7 +42,7 @@ int main(int argc, char **argv){
 
 	auto start = chrono::system_clock::now();
 
-	for (int i = 0; i < 100000; i++){
+	for (int i = 0; i < 20000; i++){
 
 		iterations++;
 
@@ -52,6 +52,7 @@ int main(int argc, char **argv){
 		}
 
 		int f = rand()/(RAND_MAX/3);
+		// int f = 1;
 		switch(f){
 		case 0: 
 			p_struct = merge_partition(p_struct, N);
@@ -61,13 +62,14 @@ int main(int argc, char **argv){
 			break;
 		case 2:
 			p_struct = switch_partition(p_struct, N, rd);
+			break;
 		}
 
 
 		if (p_struct.current_logE > p_struct.best_logE){
 			p_struct.best_partition = p_struct.current_partition;
 			p_struct.best_logE = p_struct.current_logE;
-			cout << "best log-evidence: " << p_struct.best_logE << " @T = " << p_struct.T << endl;
+			cout << "best log-evidence: " << p_struct.best_logE << "\t@T = " << p_struct.T << endl;
 			steps_since_improve = 0;
 		} else {
 			steps_since_improve++;

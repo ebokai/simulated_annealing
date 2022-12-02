@@ -11,7 +11,6 @@ int main(int argc, char **argv){
 
 	string fname = argv[1];
 	int N = 0;
-	int rd = 0;
 
 	Partition p_struct;
 	//p_struct.current_partition = fixed_partition(4, 5);
@@ -24,7 +23,6 @@ int main(int argc, char **argv){
 		community = p_struct.current_partition[i].first; 
 		p_struct.current_partition[i] = make_pair(community, icc_evidence(community, p_struct.data, N));
 		p_struct.current_logE += p_struct.current_partition[i].second;
-		// cout << bitset<n>(p_struct.current_partition[i].first) << endl;
 	}
 
 	cout << "initial log-evidence: " << p_struct.current_logE << endl;
@@ -61,7 +59,7 @@ int main(int argc, char **argv){
 			p_struct = split_partition(p_struct, N);
 			break;
 		case 2:
-			p_struct = switch_partition(p_struct, N, rd);
+			p_struct = switch_partition(p_struct, N);
 			break;
 		}
 

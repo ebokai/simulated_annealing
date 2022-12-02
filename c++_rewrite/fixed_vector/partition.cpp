@@ -1,5 +1,19 @@
 #include "header.h"
 
+vector<int> get_occupied(Partition &p_struct){
+
+	uint64_t c;
+	vector<int> idx;
+	for (int i = 0; i < n; i++){
+		c = p_struct.current_partition[i].first;
+		if (bitset<n>(c).count() > 0){
+			idx.push_back(i);
+		}
+	}
+
+	return idx;
+
+}
 
 Partition fixed_partition(Partition &p_struct, int nc, int npc){
 
@@ -52,42 +66,16 @@ Partition random_partition(Partition &p_struct){
 Partition merge_partition(Partition &p_struct, int &N){
 
 	int nc = bitset<n>(p_struct.occupied).count();
-	//cout << nc << endl;
-
 	if (nc < 2){return p_struct;}
 
-	// int p1 = rand()/(RAND_MAX/nc);
-	// int k1 = 1 + rand()/(RAND_MAX/(nc-1));
-	// int p2 = (p1 + k1) % nc;
+	vector<int> idx = get_occupied(p_struct);
 
-	bool f1 = true;
-	uint64_t p1;
+	int n1 = rand()/(RAND_MAX/(idx.size()));
+	int k1 = 1 + rand()/(RAND_MAX/(idx.size()-1));
+	int n2 = (n1 + k1) % idx.size();
 
-	while (f1) {
-		p1 = rand()/(RAND_MAX/n);
-		if (bitset<n>(p_struct.occupied & (1 << p1)).count()==1){
-			f1 = false;
-		}
-		
-	}
-
-	bool f2 = true;
-	uint64_t p2;
-
-	while (f2) {
-		p2 = rand()/(RAND_MAX/n);
-		if ((bitset<n>(p_struct.occupied & (1 << p2)).count()==1) && (p1 != p2)){
-			f2 = false;
-		}
-		
-	}
-
-
-	//cout << nc << " " << p1 << " " << p2 << " " << k1 << endl;
-
-	// int pl, ph;
-	// ph = (p1 + p2 + abs(p1-p2))/2;
-	// pl = (p1 + p2 - abs(p1-p2))/2;
+	int p1 = idx[n1];
+	int p2 = idx[n2];
 
 	uint64_t c1 = p_struct.current_partition[p1].first;
 	double l1 = p_struct.current_partition[p1].second;
@@ -97,9 +85,10 @@ Partition merge_partition(Partition &p_struct, int &N){
 
 	uint64_t new_c = c1 + c2;
 
-	//cout << bitset<n>(c1) << endl;
-	//cout << bitset<n>(c2) << endl;
-	//cout << bitset<n>(new_c) << endl; 
+	// cout << "==== MERGE ====" << endl;
+	// cout << bitset<n>(c1) << endl;
+	// cout << bitset<n>(c2) << endl;
+	// cout << bitset<n>(new_c) << endl;	
 
 	double new_logE = icc_evidence(new_c, p_struct.data, N);
 	double dlogE = new_logE - l1 - l2;
@@ -114,57 +103,37 @@ Partition merge_partition(Partition &p_struct, int &N){
 		p_struct.current_logE += dlogE;
 	}
 
-	//cout << nc << endl;
-	//cout << dlogE << endl;
-
 	return p_struct;
 
 }
 
 Partition split_partition(Partition &p_struct, int &N){
 
-	//int nc = p_struct.current_partition.size();
+	vector<int> idx = get_occupied(p_struct);
+	int n1 = rand()/(RAND_MAX/idx.size());
+	int p1 = idx[n1];
 
-	bool f1 = true;
-	uint64_t p1;
-	int ch = 0;
-
-	while (f1) {
-		p1 = rand()/(RAND_MAX/n);
-		if (bitset<n>(p_struct.occupied & (1 << p1)).count()==1){
-			f1 = false;
-		}
-		ch++;
-		//cout << ch << endl;
-	}
-
-	
 	uint64_t c = p_struct.current_partition[p1].first;
 	if (bitset<n>(c).count() == 1){return p_struct;}
 	double logE = p_struct.current_partition[p1].second;
-	
-	int t = 0;
 
 	// can't split partitions with one node
-	
-
 	uint64_t mask = rand();
 	uint64_t c1 = (c & mask);
 	uint64_t c2 = (c & (~mask));
 	
 	// prevent empty partition
-	while ((c1 == 0) || (c2 == 0)){
+	while ((bitset<n>(c1) == 0) || (bitset<n>(c2) == 0)){
 		mask = rand();
 		c1 = (c & mask);
 		c2 = (c & (~mask));
-		t++;
-		//cout << "t: " << t << endl;
 	}
 
-	//cout << bitset<n>(c) << endl; 
-	//cout << bitset<n>(c1) << endl;
-	//cout << bitset<n>(c2) << endl;
-	
+	// cout << "==== SPLIT ====" << endl;
+	// cout << bitset<n>(c) << endl;
+	// cout << bitset<n>(c1) << endl;
+	// cout << bitset<n>(c2) << endl;
+
 
 	double new_l1 = icc_evidence(c1, p_struct.data, N);
 	double new_l2 = icc_evidence(c2, p_struct.data, N);
@@ -177,26 +146,16 @@ Partition split_partition(Partition &p_struct, int &N){
 		p_struct.current_partition[p1] = make_pair(c1, new_l1);
 		
 		// find empty spot in vector for split partition
-		bool f2 = true;
-		int i = 0;
-		while ((f2) && (i < n)) {
+		for (int i = 0; i < n; i++) {
 			c = p_struct.current_partition[i].first;
-			//cout << "x: " << i << " " << c << endl;
 			if (c == 0){
 				p_struct.current_partition[i] = make_pair(c2, new_l2);
 				p_struct.occupied += (1 << i);
-				f2 = false;
+				break;
 			}
-			i++;
 		}
 		p_struct.current_logE += dlogE;
 	}
-
-
-	// nc = p_struct.current_partition.size();
-	//cout << nc << endl;
-	//cout << dlogE << endl;
-	//cout << "got stuck " << t << " times." << endl;
 
 	return p_struct;
 }
@@ -208,13 +167,12 @@ Partition switch_partition(Partition &p_struct, int &N){
 
 	int node = rand()/(RAND_MAX/n);
 	uint64_t x = (1 << node);
-	uint64_t c, cx;
-	uint64_t nx;
-	double lx;
-	double lnx;
-	double dlogE;
+	uint64_t c, cx, nx;
+	double lx, lnx, dlogE;
 	int k;
 	vector<int> idx;
+
+	//cout << "==== SWITCH ====" << endl;
 
 	for (int i = 0; i < n; i++){
 
@@ -226,7 +184,9 @@ Partition switch_partition(Partition &p_struct, int &N){
 
 		if (cx > 0){
 			// remove node from containing partition
-			nx = (p_struct.current_partition[i].first - x);
+			//cout << bitset<n>(c) << endl;
+			nx = (c - x);
+			//cout << bitset<n>(nx) << endl;
 			lx = p_struct.current_partition[i].second;
 			lnx = icc_evidence(nx, p_struct.data, N);
 			dlogE = lnx - lx;
@@ -245,10 +205,11 @@ Partition switch_partition(Partition &p_struct, int &N){
 	int ip = idx[cp];
 
 	lx = p_struct.current_partition[ip].second;
+	//cout << bitset<n>(p_struct.current_partition[ip].first) << endl;
 	nx = (p_struct.current_partition[ip].first + x);
+	//cout << bitset<n>(nx) << endl;
 	lnx = icc_evidence(nx, p_struct.data, N);
 	dlogE = lnx - lx;
-
 
 	p_struct.current_partition[ip] = make_pair(nx, lnx);
 	p_struct.current_logE += dlogE;

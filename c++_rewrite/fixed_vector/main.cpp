@@ -25,8 +25,7 @@ int main(int argc, char **argv){
 			p_struct.current_partition[i] = make_pair(community, icc_evidence(community, p_struct.data, N));
 			p_struct.current_logE += p_struct.current_partition[i].second;
 			cout << bitset<n>(p_struct.current_partition[i].first) << endl;
-		}
-		
+		}	
 	}
 
 	cout << "initial log-evidence: " << p_struct.current_logE << endl;
@@ -44,7 +43,7 @@ int main(int argc, char **argv){
 
 	auto start = chrono::system_clock::now();
 
-	for (int i = 0; i < 50000; i++){
+	for (int i = 0; i < 20000; i++){
 
 		iterations++;
 

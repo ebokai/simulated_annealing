@@ -47,7 +47,6 @@ vector<pair<uint64_t, double>> random_partition(){
 Partition merge_partition(Partition &p_struct, int &N){
 
 	int nc = p_struct.current_partition.size();
-	//cout << nc << endl;
 
 	if (nc < 2){return p_struct;}
 
@@ -55,31 +54,15 @@ Partition merge_partition(Partition &p_struct, int &N){
 	int k1 = 1 + rand()/(RAND_MAX/(nc-1));
 	int p2 = (p1 + k1) % nc;
 
-	//cout << nc << " " << p1 << " " << p2 << " " << k1 << endl;
-
 	int pl, ph;
-	// if (p1 > p2){
-	// 	ph = p1;
-	// 	pl = p2;
-	// } else {
-	// 	ph = p2;
-	// 	pl = p1;
-	// }
-
 	ph = (p1 + p2 + abs(p1-p2))/2;
 	pl = (p1 + p2 - abs(p1-p2))/2;
 
 	uint64_t c1 = p_struct.current_partition[p1].first;
 	double l1 = p_struct.current_partition[p1].second;
-
 	uint64_t c2 = p_struct.current_partition[p2].first;
 	double l2 = p_struct.current_partition[p2].second;
-
 	uint64_t new_c = c1 + c2;
-
-	//cout << bitset<n>(c1) << endl;
-	//cout << bitset<n>(c2) << endl;
-	//cout << bitset<n>(new_c) << endl; 
 
 	double new_logE = icc_evidence(new_c, p_struct.data, N);
 	double dlogE = new_logE - l1 - l2;
@@ -94,9 +77,6 @@ Partition merge_partition(Partition &p_struct, int &N){
 		p_struct.current_logE += dlogE;
 	}
 
-	//cout << nc << endl;
-	//cout << dlogE << endl;
-
 	return p_struct;
 
 }
@@ -108,8 +88,6 @@ Partition split_partition(Partition &p_struct, int &N){
 	int p1 = rand()/(RAND_MAX/nc);
 	uint64_t c = p_struct.current_partition[p1].first;
 	double logE = p_struct.current_partition[p1].second;
-	
-	int t = 0;
 
 	// can't split partitions with one node
 	if (bitset<n>(c).count() == 1){return p_struct;}
@@ -123,13 +101,7 @@ Partition split_partition(Partition &p_struct, int &N){
 		mask = rand();
 		c1 = (c & mask);
 		c2 = (c & (~mask));
-		t++;
 	}
-
-	//cout << bitset<n>(c) << endl; 
-	//cout << bitset<n>(c1) << endl;
-	//cout << bitset<n>(c2) << endl;
-	
 
 	double new_l1 = icc_evidence(c1, p_struct.data, N);
 	double new_l2 = icc_evidence(c2, p_struct.data, N);
@@ -145,30 +117,16 @@ Partition split_partition(Partition &p_struct, int &N){
 		p_struct.current_logE += dlogE;
 	}
 
-
-	// nc = p_struct.current_partition.size();
-	//cout << nc << endl;
-	//cout << dlogE << endl;
-	//cout << "got stuck " << t << " times." << endl;
-
 	return p_struct;
 }
 
-Partition switch_partition(Partition &p_struct, int &N, int rd){
-
-	rd++;
+Partition switch_partition(Partition &p_struct, int &N){
 
 	int nc = p_struct.current_partition.size();
 	if (nc < 2) {return p_struct;}
 
 	int i = rand()/(RAND_MAX/n);
 	uint64_t x = (1 << i);
-
-	// int p1, p2;
-	// while (p1 == p2){
-	// 	p1 = rand()/(RAND_MAX/nc);
-	// 	p2 = rand()/(RAND_MAX/nc);
-	// }
 
 	int p1 = rand()/(RAND_MAX/nc);
 	int k1 = 1 + rand()/(RAND_MAX/(nc-1));
@@ -194,11 +152,6 @@ Partition switch_partition(Partition &p_struct, int &N, int rd){
 			p_struct.current_partition[p2] = make_pair(z, lnz);
 			p_struct.current_logE += dlogE;
 		}
-
-		
-
-		//cout << dlogE << endl;
-
 	} else if (((x & z) == x) && (x != z)) {
 		z = z - x;
 		y = y + x;
@@ -213,18 +166,13 @@ Partition switch_partition(Partition &p_struct, int &N, int rd){
 			p_struct.current_partition[p2] = make_pair(z, lnz);
 			p_struct.current_logE += dlogE;
 		}
-
-
-		//cout << dlogE << endl;
-		
 	} else {
 		//cout << "node not in partition" << endl;
 		// call function recursively until switch is found
-		p_struct = switch_partition(p_struct, N, rd);
+		p_struct = switch_partition(p_struct, N);
 
 	}
 
-	//cout << "recursion depth: " << rd << endl;
 
 	return p_struct;
 }

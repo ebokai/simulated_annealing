@@ -26,7 +26,7 @@ vector<pair<uint64_t, double>> random_partition();
 // CANDIDATE FUNCTIONS
 Partition merge_partition(Partition &p_struct, int &N);
 Partition split_partition(Partition &p_struct, int &N);
-Partition switch_partition(Partition &p_struct, int &N, int rd);
+Partition switch_partition(Partition &p_struct, int &N);
 
 // DATA FUNCTIONS
 map<uint64_t, int> get_data(int &N, string fname);

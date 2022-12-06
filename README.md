@@ -7,3 +7,5 @@ Starting from a random (or pre-specified) partition of n variables into k commun
 1. Merging two communities 
 2. Splitting a community in two
 3. Switching a node between partitions
+
+Note: the python version is mainly a proof-of-concept of the algorithm. The optimized algorithm is coded in C++.

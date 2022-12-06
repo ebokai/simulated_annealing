@@ -120,7 +120,9 @@ Partition split_partition(Partition &p_struct, int &N){
 	return p_struct;
 }
 
-Partition switch_partition(Partition &p_struct, int &N){
+Partition switch_partition(Partition &p_struct, int &N, int rd){
+
+	rd++; // recursion depth
 
 	int nc = p_struct.current_partition.size();
 	if (nc < 2) {return p_struct;}
@@ -166,11 +168,12 @@ Partition switch_partition(Partition &p_struct, int &N){
 			p_struct.current_partition[p2] = make_pair(z, lnz);
 			p_struct.current_logE += dlogE;
 		}
-	} else {
+	} else if (rd < 20){
 		//cout << "node not in partition" << endl;
 		// call function recursively until switch is found
-		p_struct = switch_partition(p_struct, N);
-
+		p_struct = switch_partition(p_struct, N, rd);
+	} else {
+		cout << rd << " MAX RECURSION DEPTH" << endl;
 	}
 
 

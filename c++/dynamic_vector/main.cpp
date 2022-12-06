@@ -32,6 +32,9 @@ int main(int argc, char **argv){
 	int steps_since_improve = 0;
 	int max_no_improve = 10000;
 	int iterations = 0;
+	int n0 = 0;
+	int n1 = 0;
+	int n2 = 0;
 	p_struct.T = T0;
 	p_struct.best_partition = p_struct.current_partition;
 	p_struct.best_logE = p_struct.current_logE;
@@ -54,12 +57,15 @@ int main(int argc, char **argv){
 		switch(f){
 		case 0: 
 			p_struct = merge_partition(p_struct, N);
+			n0++;
 			break;
 		case 1:
 			p_struct = split_partition(p_struct, N);
+			n1++;
 			break;
 		case 2:
-			p_struct = switch_partition(p_struct, N);
+			p_struct = switch_partition(p_struct, N, 0);
+			n2++;
 			break;
 		}
 
@@ -81,6 +87,7 @@ int main(int argc, char **argv){
 
 	auto end = chrono::system_clock::now();
 	chrono::duration<double> elapsed = end - start;
+	cout << n0 << " merge, " << n1 << " split, " << n2 << " switch." << endl;
 	cout << "Elapsed time: " << elapsed.count() << "s" << endl;
 	cout << "Iterations per second: " << static_cast <double> (iterations) / elapsed.count() << endl;
 

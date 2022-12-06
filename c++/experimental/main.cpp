@@ -4,7 +4,6 @@
 #include <ratio>
 #include <chrono>
 
-
 int main() {
 
 	random_device randDevice;
@@ -16,6 +15,8 @@ int main() {
 
     p_struct = get_data(fname, p_struct);
     p_struct = random_partition(p_struct);
+
+    // SHOULD TEST IF INDEPENDENT INITIAL PARTITION DOESN'T GIVE ISSUES
 
 
     double T0 = 100;

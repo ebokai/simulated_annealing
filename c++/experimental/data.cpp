@@ -1,10 +1,9 @@
 #include "header.h"
 
-map<uint64_t, int> get_data(int &N, string fname){
+Partition get_data(string fname, Partition &p_struct){
 
 	// PARSE DATAFILE 
 
-	map<uint64_t, int> data;
 	uint64_t state;
 	string fpath = "../data/" + fname + ".dat";
 	string line, subline;
@@ -13,11 +12,13 @@ map<uint64_t, int> get_data(int &N, string fname){
 	while (getline(myfile, line)){
 		subline = line.substr(0,n);
 		state = bitset<n>(subline).to_ulong();
-		data[state] += 1;
-		N += 1;
+		p_struct.data[state] += 1;
+		p_struct.N += 1;
 	}
 
 	myfile.close();
 
-	return data;
+	cout << p_struct.N << endl;
+
+	return p_struct;
 }

@@ -58,6 +58,7 @@ Partition random_partition(Partition &p_struct){
 			cout << "assigned nodes: " << bitset<n>(assigned) << endl;
 			cout << endl;
 		}
+		
 	}
 
 	return p_struct;

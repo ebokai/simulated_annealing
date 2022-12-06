@@ -4,6 +4,8 @@
 #include <ratio>
 #include <chrono>
 
+// there is a bug with random partition since it generates ones beyond the n-th position 
+// fix this
 
 int main(int argc, char **argv){
 
@@ -71,6 +73,8 @@ int main(int argc, char **argv){
 
 
 		if (p_struct.current_logE > p_struct.best_logE){
+			// this comparison should be truncated to a lower precision 
+			// otherwise equivalent partitions are accepted as better due to precision
 			p_struct.best_partition = p_struct.current_partition;
 			p_struct.best_logE = p_struct.current_logE;
 			cout << "best log-evidence: " << p_struct.best_logE << "\t@T = " << p_struct.T << endl;

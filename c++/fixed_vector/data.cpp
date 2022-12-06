@@ -6,7 +6,7 @@ map<uint64_t, int> get_data(int &N, string fname){
 
 	map<uint64_t, int> data;
 	uint64_t state;
-	string fpath = "./data/" + fname + ".dat";
+	string fpath = "../data/" + fname + ".dat";
 	string line, subline;
 	ifstream myfile(fpath);
 

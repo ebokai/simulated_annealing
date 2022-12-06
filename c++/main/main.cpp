@@ -9,7 +9,7 @@ int main() {
 	random_device randDevice;
     srand(randDevice());
 
-    string fname = "HG19_k6_mu0.00_(20,4,5)_B0.55_N1000_00";
+    string fname = "HG19_k6_mu0.60_(20,4,5)_B0.55_N1000_00";
 
     Partition p_struct;
 
@@ -51,7 +51,7 @@ int main() {
 			p_struct.T = T0 / (1 + log(1 + i));
 		}
 
-		if (p_struct.current_log_evidence > p_struct.best_log_evidence){
+		if ((p_struct.current_log_evidence > p_struct.best_log_evidence) && !(DoubleSame(p_struct.current_log_evidence, p_struct.best_log_evidence))){
 			p_struct.best_log_evidence = p_struct.current_log_evidence;
 			cout << "best log-evidence: " << p_struct.current_log_evidence << "\t@T = " << p_struct.T << endl;
 			steps_since_improve = 0;

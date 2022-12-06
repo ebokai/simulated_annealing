@@ -1,6 +1,10 @@
 #include "header.h"
 
-map<uint64_t, unsigned int> build_pdata(map<uint64_t, unsigned int> &data, uint64_t pbit){
+bool DoubleSame(double a, double b){
+	return fabs(a-b) < EPSILON;
+}
+
+map<uint64_t, unsigned int> build_pdata(map<uint64_t, unsigned int> &data, uint64_t community){
 
 	map<uint64_t, unsigned int> pdata;
 	map<uint64_t, unsigned int>::iterator it;
@@ -13,7 +17,7 @@ map<uint64_t, unsigned int> build_pdata(map<uint64_t, unsigned int> &data, uint6
 		state = it -> first;
 		ks = it -> second;
 
-		mask_state = state & pbit;
+		mask_state = state & community;
 		pdata[mask_state] += ks;
 
 	}
@@ -23,6 +27,10 @@ map<uint64_t, unsigned int> build_pdata(map<uint64_t, unsigned int> &data, uint6
 }
 
 double icc_evidence(uint64_t community, Partition &p_struct){
+
+	// if (p_struct.calculated_log_evidence.count(community) == 1){
+	// 	return p_struct.calculated_log_evidence.at(community);
+	// }
 
 	double logE = 0;
 	int k;
@@ -40,7 +48,7 @@ double icc_evidence(uint64_t community, Partition &p_struct){
 			logE += lgamma(k + 0.5) - lgamma(0.5);
 		}
 
-	//cout << "ICC rank: " << rank << endl;
+	// p_struct.calculated_log_evidence[community] = logE;
 
 	return logE;
 }

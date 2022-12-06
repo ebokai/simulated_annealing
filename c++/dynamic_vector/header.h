@@ -9,6 +9,7 @@
 using namespace std;
 
 const int n = 20;
+const int max_recursion_depth = 20;
 
 struct Partition{
 	map<uint64_t, int> data;

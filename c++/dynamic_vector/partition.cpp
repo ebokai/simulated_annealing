@@ -168,7 +168,7 @@ Partition switch_partition(Partition &p_struct, int &N, int rd){
 			p_struct.current_partition[p2] = make_pair(z, lnz);
 			p_struct.current_logE += dlogE;
 		}
-	} else if (rd < 20){
+	} else if (rd < max_recursion_depth){
 		//cout << "node not in partition" << endl;
 		// call function recursively until switch is found
 		p_struct = switch_partition(p_struct, N, rd);

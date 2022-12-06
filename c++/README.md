@@ -1,0 +1,2 @@
+- main is the current most efficient version of the algorithm
+- alternative versions contains older, less efficient implementations (will be deprecated)

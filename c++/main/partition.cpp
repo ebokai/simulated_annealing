@@ -1,5 +1,41 @@
 #include "header.h"
 
+Partition parse_community(Partition &p_struct, uint64_t community, int i){
+
+	unsigned int community_size = bitset<n>(community).count();
+	
+	p_struct.current_partition[i] = community;
+	p_struct.partition_evidence[i] = icc_evidence(community, p_struct);
+	p_struct.current_log_evidence += p_struct.partition_evidence[i];
+	p_struct.occupied_partitions += (ONE << i);
+	p_struct.nc++;
+	if (community_size >= 2){
+		p_struct.occupied_partitions_gt2_nodes += (ONE << i);
+	}
+
+	return p_struct;
+
+}
+
+Partition load_partition(Partition &p_struct, string fname){
+
+	string fpath = "../comms/" + fname + "_mcm_communities.dat";
+	string line;
+	ifstream comm_file(fpath);
+	uint64_t community;
+	int i = 0;
+	while(getline(comm_file, line)){
+		community = stoull(line);
+		p_struct = parse_community(p_struct, community, i);
+		i++;
+	}
+
+	p_struct.best_log_evidence = p_struct.current_log_evidence;
+	cout << "loaded " << p_struct.nc << " communities" << endl;
+	cout << "initial log-evidence: " << p_struct.current_log_evidence << endl;
+
+	return p_struct;
+}
 Partition random_partition(Partition &p_struct){
 
 	uint64_t community; // candidate community
@@ -19,16 +55,7 @@ Partition random_partition(Partition &p_struct){
 		if (community_size > 0){
 			
 			// store community and associated log-evidence
-			p_struct.current_partition[i] = community;
-			p_struct.partition_evidence[i] = icc_evidence(community, p_struct);
-			p_struct.current_log_evidence += p_struct.partition_evidence[i]; // total log-evidence
-			p_struct.occupied_partitions += (ONE << i);
-			p_struct.nc++;
-
-			// keep track of communities of size >= 2
-			if (community_size >= 2){
-				p_struct.occupied_partitions_gt2_nodes += (ONE << i);
-			}
+			p_struct = parse_community(p_struct, community, i);
 
 			cout << "new community: " << bitset<n>(community) << endl;
 			cout << "log-evidence: " << p_struct.partition_evidence[i] << endl;

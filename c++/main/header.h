@@ -38,6 +38,7 @@ bool DoubleSame(double a, double b);
 unsigned int randomBitIndex(uint64_t v);
 double icc_evidence(uint64_t community, Partition &p_struct);
 Partition get_data(string fname, Partition &p_struct);
+Partition load_partition(Partition &p_struct, string fname);
 Partition random_partition(Partition &p_struct);
 Partition merge_partition(Partition &p_struct);
 Partition split_partition(Partition &p_struct);

@@ -4,16 +4,17 @@
 #include <ratio>
 #include <chrono>
 
-int main() {
+int main(int argc, char **argv) {
 
 	random_device randDevice;
     srand(randDevice());
 
-    string fname = "HG19_k6_mu0.60_(20,4,5)_B0.55_N1000_00";
+    string fname = argv[1];
 
     Partition p_struct;
 
     p_struct = get_data(fname, p_struct);
+    // p_struct = load_partition(p_struct, fname);
     p_struct = random_partition(p_struct);
 
     // SHOULD TEST IF INDEPENDENT INITIAL PARTITION DOESN'T GIVE ISSUES

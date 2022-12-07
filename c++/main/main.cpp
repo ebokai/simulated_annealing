@@ -54,6 +54,7 @@ int main(int argc, char **argv) {
 
 		if ((p_struct.current_log_evidence > p_struct.best_log_evidence) && !(DoubleSame(p_struct.current_log_evidence, p_struct.best_log_evidence))){
 			p_struct.best_log_evidence = p_struct.current_log_evidence;
+			p_struct.best_partition = p_struct.current_partition;
 			cout << "best log-evidence: " << p_struct.current_log_evidence << "\t@T = " << p_struct.T << endl;
 			steps_since_improve = 0;
 		} else {
@@ -69,6 +70,13 @@ int main(int argc, char **argv) {
     auto end = chrono::system_clock::now();
 	chrono::duration<double> elapsed = end - start;
 	cout << "Iterations per second: " << static_cast <double> (iterations) / elapsed.count() << endl;
+
+	for(int i = 0; i < n; i++){
+		uint64_t community = p_struct.best_partition[i];
+		if (bitset<n>(community).count() > 0){
+			cout << bitset<n>(community) << endl;
+		}
+	}
     
 
     return 0;

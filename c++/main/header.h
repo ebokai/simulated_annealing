@@ -29,6 +29,7 @@ struct Partition{
 
 	map<uint64_t, unsigned int> data;
 	vector<uint64_t> current_partition = vector<uint64_t>(n);
+	vector<uint64_t> best_partition = vector<uint64_t>(n);
 	vector<double> partition_evidence = vector<double>(n);
 	unordered_map<uint64_t, double> calculated_log_evidence; // store previously calculated log-evidence (slower)
 	

@@ -31,6 +31,8 @@ Partition load_partition(Partition &p_struct, string fname){
 	}
 
 	p_struct.best_log_evidence = p_struct.current_log_evidence;
+	p_struct.best_partition = p_struct.current_partition;
+	
 	cout << "loaded " << p_struct.nc << " communities" << endl;
 	cout << "initial log-evidence: " << p_struct.current_log_evidence << endl;
 
@@ -67,8 +69,10 @@ Partition random_partition(Partition &p_struct){
 	}
 
 	p_struct.best_log_evidence = p_struct.current_log_evidence;
+	p_struct.best_partition = p_struct.current_partition;
 
 	cout << "generated " << p_struct.nc << " communities" << endl;
+	cout << "initial log-evidence: " << p_struct.current_log_evidence << endl;
  
 	return p_struct;
 }

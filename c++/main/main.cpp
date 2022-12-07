@@ -20,6 +20,7 @@ int main(int argc, char **argv) {
     // SHOULD TEST IF INDEPENDENT INITIAL PARTITION DOESN'T GIVE ISSUES
 
 
+    unsigned int f;
     double T0 = 100;
     unsigned int update_schedule = 100;
     unsigned int iterations = 0;
@@ -34,7 +35,13 @@ int main(int argc, char **argv) {
 
     	iterations++;
 
-    	int f = rand()/(RAND_MAX/3);
+    	if (p_struct.nc == n){
+    		f = 0; // always merge if all independent communities
+    	} else if (p_struct.nc == 1){
+    		f = 1; // always split if one big community
+    	} else {
+    		f = rand()/(RAND_MAX/3);
+    	}
 
 		switch(f){
 		case 0: 
@@ -55,7 +62,7 @@ int main(int argc, char **argv) {
 		if ((p_struct.current_log_evidence > p_struct.best_log_evidence) && !(DoubleSame(p_struct.current_log_evidence, p_struct.best_log_evidence))){
 			p_struct.best_log_evidence = p_struct.current_log_evidence;
 			p_struct.best_partition = p_struct.current_partition;
-			cout << "best log-evidence: " << p_struct.current_log_evidence << "\t@T = " << p_struct.T << endl;
+			cout << "Best log-evidence: " << p_struct.current_log_evidence << "\t@T = " << p_struct.T << endl;
 			steps_since_improve = 0;
 		} else {
 			steps_since_improve++;

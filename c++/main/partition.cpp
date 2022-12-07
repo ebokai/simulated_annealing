@@ -19,6 +19,8 @@ Partition parse_community(Partition &p_struct, uint64_t community, int i){
 
 Partition load_partition(Partition &p_struct, string fname){
 
+	p_struct.current_log_evidence = 0;
+
 	string fpath = "../comms/" + fname + "_mcm_communities.dat";
 	string line;
 	ifstream comm_file(fpath);
@@ -33,12 +35,14 @@ Partition load_partition(Partition &p_struct, string fname){
 	p_struct.best_log_evidence = p_struct.current_log_evidence;
 	p_struct.best_partition = p_struct.current_partition;
 	
-	cout << "loaded " << p_struct.nc << " communities" << endl;
-	cout << "initial log-evidence: " << p_struct.current_log_evidence << endl;
+	cout << "Loaded " << p_struct.nc << " communities" << endl;
+	cout << "Initial log-evidence: " << p_struct.current_log_evidence << endl;
 
 	return p_struct;
 }
 Partition random_partition(Partition &p_struct){
+
+	p_struct.current_log_evidence = 0;
 
 	uint64_t community; // candidate community
 	uint64_t assigned = 0; // assigned nodes
@@ -59,9 +63,9 @@ Partition random_partition(Partition &p_struct){
 			// store community and associated log-evidence
 			p_struct = parse_community(p_struct, community, i);
 
-			cout << "new community: " << bitset<n>(community) << endl;
-			cout << "log-evidence: " << p_struct.partition_evidence[i] << endl;
-			cout << "assigned nodes: " << bitset<n>(assigned) << endl;
+			cout << "New community: " << bitset<n>(community) << endl;
+			cout << "Log-evidence: " << p_struct.partition_evidence[i] << endl;
+			cout << "Assigned nodes: " << bitset<n>(assigned) << endl;
 			cout << endl;
 			
 			i++;
@@ -71,8 +75,8 @@ Partition random_partition(Partition &p_struct){
 	p_struct.best_log_evidence = p_struct.current_log_evidence;
 	p_struct.best_partition = p_struct.current_partition;
 
-	cout << "generated " << p_struct.nc << " communities" << endl;
-	cout << "initial log-evidence: " << p_struct.current_log_evidence << endl;
+	cout << "Generated " << p_struct.nc << " communities" << endl;
+	cout << "Initial log-evidence: " << p_struct.current_log_evidence << endl;
  
 	return p_struct;
 }
